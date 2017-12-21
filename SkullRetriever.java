@@ -15,6 +15,11 @@ public class SkullRetriever {
     private static final String TEXTURE_LINK_GETTER = "https://www.w3.org/services/html2txt?url=";
     private static final String TEXTURE_SPLITTER = "http://textures.minecraft.net/texture/";
 
+    /**
+     * Returns the texture link for skull url.
+     * @param u The url from minecraft-heads.com/ that leads to the skull.
+     * @return The textures.minecraft.net/texture/ link to your skull.
+     */
     public static String getTextureFromURL(String u)
     {
         String texture = "";
@@ -44,8 +49,10 @@ public class SkullRetriever {
         return texture;
     }
 
-    /*
-    Returns a HashMap of <Skin name, skin url> for search query
+    /**
+     * This HashMap contains the options returned by minecraft-heads.com/
+     * @return Returns a HashMap of <Skin name, skin url> for search query.
+     * @param entity_name The search query
      */
     public static HashMap<String, String> getSkullOptions(String entity_name) {
         boolean start_recording = false;
@@ -91,7 +98,8 @@ public class SkullRetriever {
     }
 
     /*
-    Returns skull texture with most relevancy to search
+     * @return skull texture of the skull with the name that matches the search
+     * @param search The skull to search for.
      */
     public static String getMostRelevantSkull(String search)
     {
