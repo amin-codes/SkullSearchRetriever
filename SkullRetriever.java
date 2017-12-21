@@ -40,11 +40,10 @@ public class SkullRetriever {
                 }
             }
 
+            br.close();
+            is.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-	    br.close();
-            is.close();
         }
         return texture;
     }
@@ -87,12 +86,10 @@ public class SkullRetriever {
                     start_recording = !start_recording;
                 }
             }
-
+            br.close();
+            is.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-          br.close();
-          is.close(); 
         }
         return namesAndURLS;
     }
@@ -104,10 +101,10 @@ public class SkullRetriever {
     public static String getMostRelevantSkull(String search)
     {
         search = search.toLowerCase();
-         
+
         HashMap<String, String> options = getSkullOptions(search);
         String texture = getTextureFromURL(options.get(options.keySet().stream().filter(search::equalsIgnoreCase).collect(Collectors.toList()).get(0)));
-            
+
         return texture;
     }
 
@@ -153,3 +150,5 @@ public class SkullRetriever {
             return getField(target.getSuperclass(), name, fieldType, index);
         throw new IllegalArgumentException("Cannot find field with type " + fieldType);
     }
+    
+}
