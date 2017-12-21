@@ -14,7 +14,8 @@ public enum Database {
                             "<font style=\"color:#666\">",
                             "</font>",
                             "<a href=\"/",
-                            "\">"),
+                            "\">",
+            false),
     HEADDB("http://headdb.com/view/all", //DB
                    "", //SEARCH
                    "<div class=\"card\">", //I_START
@@ -25,14 +26,28 @@ public enum Database {
                    "<div class=\"card-header\">", //NAME_START
                    "</div>", //NAME_END
                    "<a href=\"http://textures.minecraft.net/texture/", //URL_START
-                   "\" download=" //URL_END
-                   );
-    public String DATABASE, SEARCH, START, END, END_SEARCH, TEXTURE_LINK_GETTER, TEXTURE_SPLITTER, NAME_START, NAME_END, URL_START, URL_END;
+                   "\" download=", //URL_END
+                   false),
+    MINESKIN("https://api.mineskin.org/",
+            "get/list/1?size=10&filter=",
+            "{int}",
+            "{int}",
+            "",
+            "",
+            "",
+            "name",
+            "",
+            "url",
+            "",
+            true
+    );
 
+    public String DATABASE, SEARCH, START, END, END_SEARCH, TEXTURE_LINK_GETTER, TEXTURE_SPLITTER, NAME_START, NAME_END, URL_START, URL_END;
+    public boolean USE_JSON;
     private Database(String DATABASE, String SEARCH, String START, String END, String END_SEARCH,
                     String TEXTURE_LINK_GETTER, String TEXTURE_SPLITTER,
                     String NAME_START, String NAME_END,
-                    String URL_START, String URL_END)
+                    String URL_START, String URL_END, boolean use_json)
     {
         this.DATABASE = DATABASE;
         this.SEARCH = SEARCH;
@@ -45,6 +60,7 @@ public enum Database {
         this.NAME_END = NAME_END;
         this.URL_START = URL_START;
         this.URL_END = URL_END;
+        this.USE_JSON = use_json;
     }
 
 }

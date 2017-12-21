@@ -3,9 +3,15 @@ package me.AKZOMBIE74;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,10 +20,7 @@ import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -128,48 +131,66 @@ public class SkullRetriever {
         String line;
         String skinName = "";
         String skinURL = "";
+        String json = "";
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(is.getInputStream()))) {
-            while ( (line = br.readLine()) != null)
-            {
+            while ( (line = br.readLine()) != null) {
                 line = line.trim();
-                if (line.equals(getDB().END_SEARCH)) break;
-                if (start_recording)
-                {
-                    if (getting_name)
-                    {
-                        skinName = line;
-                        getting_name = false;
-                        continue;
-                    }
-
-                    if (line.startsWith(getDB().NAME_START)) //Get name
-                    {
-                        if (getDB().TEXTURE_LINK_GETTER.equals("")) {
-                            getting_name = true;
+                if (!getDB().USE_JSON) {
+                    if (line.equals(getDB().END_SEARCH)) break;
+                    if (start_recording) {
+                        if (getting_name) {
+                            skinName = line;
+                            getting_name = false;
                             continue;
                         }
-                        skinName = line.substring(line.indexOf(getDB().NAME_START) + getDB().NAME_START.length(), line.indexOf(getDB().NAME_END));
-                        continue;
+
+                        if (line.startsWith(getDB().NAME_START)) //Get name
+                        {
+                            if (getDB().TEXTURE_LINK_GETTER.equals("")) {
+                                getting_name = true;
+                                continue;
+                            }
+                            skinName = line.substring(line.indexOf(getDB().NAME_START) + getDB().NAME_START.length(), line.indexOf(getDB().NAME_END));
+                            continue;
+                        } else if (line.startsWith(getDB().URL_START)) //Get url
+                        {
+                            skinURL = line.substring(line.indexOf(getDB().URL_START) + getDB().URL_START.length(), line.indexOf(getDB().URL_END));
+                            skinURL = getDB().TEXTURE_LINK_GETTER.equals("") ? "http://textures.minecraft.net/texture/" + skinURL : getDB().DATABASE + skinURL;
+                            continue;
+                        }
                     }
-                    else if (line.startsWith(getDB().URL_START)) //Get url
-                    {
-                        skinURL = line.substring(line.indexOf(getDB().URL_START) + getDB().URL_START.length(), line.indexOf(getDB().URL_END));
-                        skinURL = getDB().TEXTURE_LINK_GETTER.equals("") ? "http://textures.minecraft.net/texture/"+skinURL : getDB().DATABASE + skinURL;
-                        continue;
+
+                    //Get next option
+                    if (line.equals(getDB().START) && !start_recording) start_recording = true;
+                    else if (line.contains(getDB().END) && start_recording) {
+                        namesAndURLS.put(skinName, skinURL.trim());
+                        start_recording = false;
                     }
                 }
-
-                //Get next option
-                if (line.equals(getDB().START) && !start_recording) start_recording = true;
-                else if (line.equals(getDB().END) && start_recording)
-                {
-                    namesAndURLS.put(skinName, skinURL.trim());
-                    start_recording = false;
+                else {
+                    json+=line;
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        if (getDB().USE_JSON)
+        {
+            JSONObject object = null;
+            try {
+                object = (JSONObject) new JSONParser().parse(json);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            JSONArray skins = (JSONArray) object.get("skins");
+            for (Object skull : skins)
+            {
+                JSONObject jsonObject = (JSONObject) skull;
+                skinName = jsonObject.get("name").toString();
+                skinURL = jsonObject.get("url").toString();
+                namesAndURLS.put(skinName, skinURL);
+            };
         }
         return namesAndURLS;
     }
@@ -180,9 +201,14 @@ public class SkullRetriever {
      */
     public String getMostRelevantSkull(String search)
     {
+        String texture = "";
         Map<String, String> options = getSkullOptions(search);
-        String texture = getTextureFromURL(options.get(options.keySet().stream().filter(search::equalsIgnoreCase).collect(Collectors.toList()).get(0)));
-
+        try {
+            texture = getTextureFromURL(options.get(options.keySet().stream().filter(search::equalsIgnoreCase).collect(Collectors.toList()).get(0)));
+        } catch (IndexOutOfBoundsException e)
+        {
+            Bukkit.getLogger().info(ChatColor.RED + "NO RESULTS FOR: " + ChatColor.YELLOW + search);
+        }
         return texture;
     }
 
