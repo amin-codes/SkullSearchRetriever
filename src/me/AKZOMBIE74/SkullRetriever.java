@@ -187,8 +187,8 @@ public class SkullRetriever {
             for (Object skull : skins)
             {
                 JSONObject jsonObject = (JSONObject) skull;
-                skinName = jsonObject.get("name").toString();
-                skinURL = jsonObject.get("url").toString();
+                skinName = jsonObject.get(getDB().NAME_START).toString();
+                skinURL = jsonObject.get(getDB().URL_START).toString();
                 namesAndURLS.put(skinName, skinURL);
             };
         }
