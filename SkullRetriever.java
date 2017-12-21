@@ -14,13 +14,18 @@ public class SkullRetriever {
 
     private static final String TEXTURE_LINK_GETTER = "https://www.w3.org/services/html2txt?url=";
     private static final String TEXTURE_SPLITTER = "http://textures.minecraft.net/texture/";
-
+    
+    public SkullRetriever()
+    {
+        
+    }
+    
     /**
      * Returns the texture link for skull url.
      * @param u The url from minecraft-heads.com/ that leads to the skull.
      * @return The textures.minecraft.net/texture/ link to your skull.
      */
-    public static String getTextureFromURL(String u)
+    public String getTextureFromURL(String u)
     {
         String texture = "";
         try {
@@ -53,7 +58,7 @@ public class SkullRetriever {
      * @return Returns a HashMap of <Skin name, skin url> for search query.
      * @param entity_name The search query
      */
-    public static HashMap<String, String> getSkullOptions(String entity_name) {
+    public HashMap<String, String> getSkullOptions(String entity_name) {
         boolean start_recording = false;
         HashMap<String, String> namesAndURLS = new HashMap<>();
         try {
@@ -98,7 +103,7 @@ public class SkullRetriever {
      * @return skull texture of the skull with the name that matches the search
      * @param search The skull to search for.
      */
-    public static String getMostRelevantSkull(String search)
+    public String getMostRelevantSkull(String search)
     {
         search = search.toLowerCase();
 
@@ -114,7 +119,7 @@ public class SkullRetriever {
        @param name The display name for the ItemStack.
        @return A skull ItemStack with the given texture.
      */
-    public static ItemStack getCustomSkull(String url, String name) {
+    public ItemStack getCustomSkull(String url, String name) {
         GameProfile profile = new GameProfile(UUID.randomUUID(), name);
         PropertyMap propertyMap = profile.getProperties();
         if (propertyMap == null) {
@@ -150,5 +155,5 @@ public class SkullRetriever {
             return getField(target.getSuperclass(), name, fieldType, index);
         throw new IllegalArgumentException("Cannot find field with type " + fieldType);
     }
-    
+
 }
