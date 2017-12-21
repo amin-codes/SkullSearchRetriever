@@ -15,10 +15,6 @@ public class SkullRetriever {
     private static final String TEXTURE_LINK_GETTER = "https://www.w3.org/services/html2txt?url=";
     private static final String TEXTURE_SPLITTER = "http://textures.minecraft.net/texture/";
     
-    public SkullRetriever()
-    {
-        
-    }
     
     /**
      * Returns the texture link for skull url.
