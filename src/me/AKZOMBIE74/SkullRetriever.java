@@ -8,12 +8,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -49,19 +52,29 @@ public class SkullRetriever {
      * @param u The url from minecraft-heads.com/ that leads to the skull.
      * @return The textures.minecraft.net/texture/ link to your skull.
      */
-    public String getTextureFromURL(String u)
-    {
+    public String getTextureFromURL(String u) {
         String texture = "";
         if (!getDB().TEXTURE_LINK_GETTER.equals("")) {
-            try {
-                URL url = new URL(getDB().TEXTURE_LINK_GETTER + u);
-                URLConnection is = url.openConnection();
+            URL url = null;
+            URLConnection is = null;
 
+            try {
+                url = new URL(getDB().TEXTURE_LINK_GETTER + u);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+
+            try
+            {
+                is = url.openConnection();
                 is.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
                 is.connect();
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
 
-                BufferedReader br = new BufferedReader(new InputStreamReader(is.getInputStream()));
-
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(is.getInputStream()))) {
                 String line;
 
                 while ((line = br.readLine()) != null) {
@@ -71,9 +84,7 @@ public class SkullRetriever {
                         break;
                     }
                 }
-
-                br.close();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -85,26 +96,40 @@ public class SkullRetriever {
     }
 
     /**
-     * This HashMap contains the options returned by minecraft-heads.com/
+     * This Map contains the options returned by minecraft-heads.com/
      * @return Returns a HashMap of <Skin name, skin url> for search query.
      * @param entity_name The search query
      */
-    public HashMap<String, String> getSkullOptions(String entity_name) {
+    public Map<String, String> getSkullOptions(String entity_name) {
         boolean start_recording = false;
         boolean getting_name = false;
         HashMap<String, String> namesAndURLS = new HashMap<>();
-        try {
-            String search = getDB().SEARCH.equals("") ? getDB().DATABASE : getDB().DATABASE + getDB().SEARCH + entity_name.replace(" ", "%20");
-            URL url = new URL(search);
-            URLConnection is = url.openConnection();
 
+        String search = getDB().SEARCH.equals("") ? getDB().DATABASE : getDB().DATABASE + getDB().SEARCH + entity_name.replace(" ", "%20");
+        URL url = null;
+        URLConnection is = null;
+
+        try {
+            url = new URL(search);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        try
+        {
+            is = url.openConnection();
             is.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
             is.connect();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(is.getInputStream()));
-            String line;
-            String skinName = "";
-            String skinURL = "";
+        String line;
+        String skinName = "";
+        String skinURL = "";
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is.getInputStream()))) {
             while ( (line = br.readLine()) != null)
             {
                 line = line.trim();
@@ -143,8 +168,7 @@ public class SkullRetriever {
                     start_recording = false;
                 }
             }
-            br.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return namesAndURLS;
@@ -156,7 +180,7 @@ public class SkullRetriever {
      */
     public String getMostRelevantSkull(String search)
     {
-        HashMap<String, String> options = getSkullOptions(search);
+        Map<String, String> options = getSkullOptions(search);
         String texture = getTextureFromURL(options.get(options.keySet().stream().filter(search::equalsIgnoreCase).collect(Collectors.toList()).get(0)));
 
         return texture;

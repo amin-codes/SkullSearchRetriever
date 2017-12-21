@@ -8,7 +8,10 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class SkullSearch extends JavaPlugin{
     private SkullRetriever skullRetriever;
+
+    private static final Object lock = new Object(); // little allocated
     private static SkullSearch instance;
+
 
     @Override
     public void onEnable()
@@ -35,8 +38,15 @@ public class SkullSearch extends JavaPlugin{
     /*
      * Only way to access the api
      */
-    public static SkullSearch getInstance()
-    {
-        return instance;
+    public static SkullSearch getInstance() {
+        SkullSearch inst = instance;
+        if (inst == null) {
+            synchronized(lock) {
+                if (inst == null) {
+                    inst = instance = SkullSearch.getPlugin(SkullSearch.class);
+                }
+            }
+        }
+        return inst;
     }
 }
