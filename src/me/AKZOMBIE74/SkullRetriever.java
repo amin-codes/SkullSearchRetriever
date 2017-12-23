@@ -313,6 +313,7 @@ public class SkullRetriever {
         propertyMap.put("textures", new Property("textures", new String(encodedData)));
         ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
         ItemMeta headMeta = head.getItemMeta();
+        headMeta.setDisplayName(name);
         Class<?> headMetaClass = headMeta.getClass();
         try {
             getField(headMetaClass, "profile", GameProfile.class, 0).set(headMeta, profile);
