@@ -23,9 +23,9 @@ public enum Database {
                    "", //PAGINATION
                    "", //TEXTURE_LINK_GETTER
                    "", //TEXTURE_SPLITTER
-                   "{org.json.simple.JSONObject}*|{org.json.simple.JSONObject}name", //NAME_START
+                   "*|name", //NAME_START
                    "", //NAME_END
-                   "{org.json.simple.JSONObject}*|{org.json.simple.JSONArray}valueDecoded|{org.json.simple.JSONArray}textures|{org.json.simple.JSONArray}SKIN|{org.json.simple.JSONObject}url", //URL_START
+                   "*|valueDecoded|textures|SKIN|url", //URL_START
                    "", //URL_END
                    true),
     MINESKIN("https://api.mineskin.org/",
@@ -35,9 +35,9 @@ public enum Database {
             "",
             "",
             "", //7
-            "{org.json.simple.JSONObject}skins|{org.json.simple.JSONArray}*|{org.json.simple.JSONObject}name",
+            "skins|*|name",
             "",
-            "{org.json.simple.JSONObject}skins|{org.json.simple.JSONArray}*|{org.json.simple.JSONObject}url",
+            "skins|*|url",
             "",
             true
     );

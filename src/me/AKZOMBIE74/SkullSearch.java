@@ -2,8 +2,6 @@ package me.AKZOMBIE74;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-
-
 /**
  * Created by AKZOMBIE74 on 12/21/2017.
  */

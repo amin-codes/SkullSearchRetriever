@@ -203,12 +203,11 @@ public class SkullRetriever {
     private String search_json_like_its_yaml(String[] path, int index, String json)
     {
         String values = "";
+        ArrayList parsing = parseJSON(json);
 
-        Object jsonObject = parseJSON(json);
-        String specific_path = path[index];
-        boolean has_class = specific_path.contains("{");
-        String class_type = has_class ? specific_path.substring(specific_path.indexOf("{") + 1, specific_path.indexOf("}")) : "*";
-        String key = has_class ? specific_path.substring(specific_path.indexOf("}") + 1) : class_type;
+        Object jsonObject = parsing.get(0);
+        String class_type = String.valueOf(parsing.get(1));
+        String key = path[index];
 
         if (key.equals("*"))
         {
@@ -249,21 +248,25 @@ public class SkullRetriever {
         return values;
     }
 
-    private Object parseJSON(String json)
+    private ArrayList parseJSON(String json)
     {
+        ArrayList object_and_type = new ArrayList();
         Object object = null;
+        String class_type = "org.json.simple.JSONObject";
         try {
             try {
                 object = (JSONObject) new JSONParser().parse(json);
             } catch (ClassCastException exception)
             {
-                String class_type = exception.getMessage().split(" cannot be cast to ")[0];
+                class_type = exception.getMessage().split(" cannot be cast to ")[0];
                 object = getJSONClass(class_type).cast(new JSONParser().parse(json));
             }
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return object;
+        object_and_type.add(object);
+        object_and_type.add(class_type);
+        return object_and_type;
     }
 
     /*
