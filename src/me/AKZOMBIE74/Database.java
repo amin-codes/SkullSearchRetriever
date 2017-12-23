@@ -16,28 +16,28 @@ public enum Database {
                             "<a href=\"/",
                             "\">",
             false),
-    HEADDB("http://headdb.com/view/all", //DB
+    HEADDB("https://headdb.com/api/category/all", //DB
                    "", //SEARCH
-                   "<div class=\"card\">", //I_START
-                   "</div><div class=\"col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-3\" style=\"margin-bottom:20px;\">", //I_END
-                   "<nav class=\"navbar navbar-light bg-faded\">", //PAGINATION
+                   "", //I_START
+                   "", //I_END
+                   "", //PAGINATION
                    "", //TEXTURE_LINK_GETTER
-                   "<a href=\"http://textures.minecraft.net/texture/", //TEXTURE_SPLITTER
-                   "<div class=\"card-header\">", //NAME_START
-                   "</div>", //NAME_END
-                   "<a href=\"http://textures.minecraft.net/texture/", //URL_START
-                   "\" download=", //URL_END
-                   false),
+                   "", //TEXTURE_SPLITTER
+                   "{org.json.simple.JSONObject}*|{org.json.simple.JSONObject}name", //NAME_START
+                   "", //NAME_END
+                   "{org.json.simple.JSONObject}*|{org.json.simple.JSONArray}valueDecoded|{org.json.simple.JSONArray}textures|{org.json.simple.JSONArray}SKIN|{org.json.simple.JSONObject}url", //URL_START
+                   "", //URL_END
+                   true),
     MINESKIN("https://api.mineskin.org/",
             "get/list/1?size=10&filter=",
-            "{int}",
-            "{int}",
             "",
             "",
             "",
-            "name",
             "",
-            "url",
+            "", //7
+            "{org.json.simple.JSONObject}skins|{org.json.simple.JSONArray}*|{org.json.simple.JSONObject}name",
+            "",
+            "{org.json.simple.JSONObject}skins|{org.json.simple.JSONArray}*|{org.json.simple.JSONObject}url",
             "",
             true
     );

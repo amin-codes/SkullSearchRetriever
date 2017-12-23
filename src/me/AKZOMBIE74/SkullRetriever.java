@@ -177,22 +177,93 @@ public class SkullRetriever {
         }
         if (getDB().USE_JSON)
         {
-            JSONObject object = null;
-            try {
-                object = (JSONObject) new JSONParser().parse(json);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            JSONArray skins = (JSONArray) object.get("skins");
-            for (Object skull : skins)
+            String delimitter = "\\" + "|";
+            String[] names_path = getDB().NAME_START.split(delimitter);
+            String[] urls_path = getDB().URL_START.split(delimitter);
+
+            String[] names = search_json_like_its_yaml(names_path, 0, json).split(delimitter);
+            String[] urls = search_json_like_its_yaml(urls_path, 0, json).split(delimitter);
+            for (int i = 0; i < names.length; i++)
             {
-                JSONObject jsonObject = (JSONObject) skull;
-                skinName = jsonObject.get(getDB().NAME_START).toString();
-                skinURL = jsonObject.get(getDB().URL_START).toString();
-                namesAndURLS.put(skinName, skinURL);
-            };
+                namesAndURLS.put(names[i], urls[i]);
+            }
         }
         return namesAndURLS;
+    }
+
+    private Class<?> getJSONClass(String className)
+    {
+        Class<?> type = null;
+        try {
+            type = Class.forName(className);
+        } catch (ClassNotFoundException e) {}
+        return type;
+    }
+
+    private String search_json_like_its_yaml(String[] path, int index, String json)
+    {
+        String values = "";
+
+        Object jsonObject = parseJSON(json);
+        String specific_path = path[index];
+        boolean has_class = specific_path.contains("{");
+        String class_type = has_class ? specific_path.substring(specific_path.indexOf("{") + 1, specific_path.indexOf("}")) : "*";
+        String key = has_class ? specific_path.substring(specific_path.indexOf("}") + 1) : class_type;
+
+        if (key.equals("*"))
+        {
+            if (class_type.equals("org.json.simple.JSONArray"))
+            {
+                Iterator value = ((JSONArray) jsonObject).iterator();
+                while (value.hasNext())
+                {
+                    String for_each = String.valueOf(value.next());
+                    values += search_json_like_its_yaml(path, index + 1, for_each);
+                }
+            }
+            else {
+                Iterator value = ((JSONObject) jsonObject).values().iterator();
+                while (value.hasNext()) {
+                    String for_each = String.valueOf(value.next());
+                    values += search_json_like_its_yaml(path, index + 1, for_each);
+                }
+            }
+        }
+        else if (class_type.equals("org.json.simple.JSONObject"))
+        {
+            JSONObject json_object = (JSONObject) jsonObject;
+            if (index==path.length-1) return String.valueOf(json_object.get(key)) + "|";
+            else
+            {
+                values += search_json_like_its_yaml(path, index + 1, String.valueOf(json_object.get(key)));
+            }
+        }
+        else if (class_type.equals("org.json.simple.JSONArray")) {
+            Iterator value = ((JSONArray) jsonObject).iterator();
+            while (value.hasNext())
+            {
+                String for_each = String.valueOf(value.next());
+                values += search_json_like_its_yaml(path, index + 1, for_each);
+            }
+        }
+        return values;
+    }
+
+    private Object parseJSON(String json)
+    {
+        Object object = null;
+        try {
+            try {
+                object = (JSONObject) new JSONParser().parse(json);
+            } catch (ClassCastException exception)
+            {
+                String class_type = exception.getMessage().split(" cannot be cast to ")[0];
+                object = getJSONClass(class_type).cast(new JSONParser().parse(json));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return object;
     }
 
     /*
