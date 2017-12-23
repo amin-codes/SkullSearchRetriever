@@ -15,7 +15,8 @@ public enum Database {
                             "</font>",
                             "<a href=\"/",
                             "\">",
-            false),
+            false,
+            "GET"),
     HEADDB("https://headdb.com/api/category/all", //DB
                    "", //SEARCH
                    "", //I_START
@@ -27,7 +28,8 @@ public enum Database {
                    "", //NAME_END
                    "*|valueDecoded|textures|SKIN|url", //URL_START
                    "", //URL_END
-                   true),
+                   true,
+            "GET"),
     MINESKIN("https://api.mineskin.org/",
             "get/list/1?size=10&filter=",
             "",
@@ -39,15 +41,29 @@ public enum Database {
             "",
             "skins|*|url",
             "",
-            true
-    );
+            true,
+            "GET"
+    ),
+    FRESHCOAL("https://freshcoal.com/php_includes/search_query.php?",
+            "search=",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "*|HeadName", //NAME_START
+            "",
+            "*|Url", //URL_START
+            "",
+            true,
+            "POST");
 
-    public String DATABASE, SEARCH, START, END, END_SEARCH, TEXTURE_LINK_GETTER, TEXTURE_SPLITTER, NAME_START, NAME_END, URL_START, URL_END;
+    public String DATABASE, SEARCH, START, END, END_SEARCH, TEXTURE_LINK_GETTER, TEXTURE_SPLITTER, NAME_START, NAME_END, URL_START, URL_END, REQUEST_METHOD;
     public boolean USE_JSON;
     private Database(String DATABASE, String SEARCH, String START, String END, String END_SEARCH,
                     String TEXTURE_LINK_GETTER, String TEXTURE_SPLITTER,
                     String NAME_START, String NAME_END,
-                    String URL_START, String URL_END, boolean use_json)
+                    String URL_START, String URL_END, boolean use_json, String request)
     {
         this.DATABASE = DATABASE;
         this.SEARCH = SEARCH;
@@ -61,6 +77,7 @@ public enum Database {
         this.URL_START = URL_START;
         this.URL_END = URL_END;
         this.USE_JSON = use_json;
+        this.REQUEST_METHOD = request;
     }
 
 }

@@ -13,7 +13,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -110,7 +112,7 @@ public class SkullRetriever {
 
         String search = getDB().SEARCH.equals("") ? getDB().DATABASE : getDB().DATABASE + getDB().SEARCH + entity_name.replace(" ", "%20");
         URL url = null;
-        URLConnection is = null;
+        HttpsURLConnection is = null;
 
         try {
             url = new URL(search);
@@ -120,8 +122,17 @@ public class SkullRetriever {
 
         try
         {
-            is = url.openConnection();
+            is = (HttpsURLConnection) url.openConnection();
             is.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
+            if (getDB().REQUEST_METHOD.equals("POST"))
+            {
+                is.setDoOutput(true);
+                is.setRequestMethod(getDB().REQUEST_METHOD);
+                DataOutputStream wr = new DataOutputStream(is.getOutputStream());
+                wr.writeBytes(getDB().SEARCH + entity_name);
+                wr.flush();
+                wr.close();
+            }
             is.connect();
         } catch (IOException e)
         {
