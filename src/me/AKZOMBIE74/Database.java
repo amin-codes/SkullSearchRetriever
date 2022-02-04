@@ -17,7 +17,7 @@ public enum Database {
                             "\">",
             false,
             "GET"),
-    HEADDB("https://headdb.com/api/category/all", //DB
+    HEADDB("https://headdb.org/api/category/all", //DB
                    "", //SEARCH
                    "", //I_START
                    "", //I_END
